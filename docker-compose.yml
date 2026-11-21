@@ -17,10 +17,10 @@ services:
 
   # Temporal.io dev server (Server + Web UI + SQLite persistence)
   temporal:
-    image: temporalio/dev-server:latest
+    image: temporalio/temporal:latest
     container_name: triphoria-temporal
     restart: unless-stopped
-    command: ["--ip", "0.0.0.0"]
+    command: ["server", "start-dev", "--ip", "0.0.0.0"]
     ports:
       - "7233:7233"   # Temporal gRPC API
       - "8233:8233"   # Temporal Web UI
