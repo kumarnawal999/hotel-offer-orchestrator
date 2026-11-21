@@ -5,11 +5,13 @@ import path from 'path';
 async function bundle() {
   try {
     console.log('Pre-bundling Temporal workflow code for production...');
+    const workflowsPath = require.resolve('../temporal/workflows');
     const { code } = await bundleWorkflowCode({
-      workflowsPath: require.resolve('../temporal/workflows'),
+      workflowsPath,
     });
 
-    const outDir = path.resolve(__dirname, '../../dist/temporal');
+    // Write directly into the directory where compiled workflows reside
+    const outDir = path.dirname(workflowsPath);
     await mkdir(outDir, { recursive: true });
     const bundlePath = path.join(outDir, 'workflow-bundle.js');
     await writeFile(bundlePath, code, 'utf-8');

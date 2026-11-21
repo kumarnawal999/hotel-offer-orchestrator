@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import axios from 'axios';
 import { config } from '../config/env';
 import { RedisService } from '../services/redis.service';
+import { SupplierService } from '../services/supplier.service';
 import { TemporalClientService } from '../temporal/client';
 import { ComponentHealth, HealthCheckResponse } from '../types/supplier.types';
 import { logger } from '../utils/logger';

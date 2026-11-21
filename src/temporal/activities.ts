@@ -14,7 +14,7 @@ export async function fetchSupplierAHotelsActivity(
 ): Promise<SupplierHotel[]> {
   const info = Context.current().info;
   logger.info(
-    `[Activity: fetchSupplierAHotelsActivity] Started for city: ${city} (Attempt: ${info.attempt}, WorkflowId: ${info.workflowExecution.workflowId})`
+    `[Activity: fetchSupplierAHotelsActivity] Started for city: ${city} (Attempt: ${info.attempt}, WorkflowId: ${info.workflowExecution?.workflowId ?? 'unknown'})`
   );
 
   try {
@@ -37,7 +37,7 @@ export async function fetchSupplierBHotelsActivity(
 ): Promise<SupplierHotel[]> {
   const info = Context.current().info;
   logger.info(
-    `[Activity: fetchSupplierBHotelsActivity] Started for city: ${city} (Attempt: ${info.attempt}, WorkflowId: ${info.workflowExecution.workflowId})`
+    `[Activity: fetchSupplierBHotelsActivity] Started for city: ${city} (Attempt: ${info.attempt}, WorkflowId: ${info.workflowExecution?.workflowId ?? 'unknown'})`
   );
 
   try {
@@ -59,7 +59,7 @@ export async function saveHotelsToRedisActivity(
 ): Promise<void> {
   const info = Context.current().info;
   logger.info(
-    `[Activity: saveHotelsToRedisActivity] Storing ${hotels.length} hotels in Redis for city: ${city} (WorkflowId: ${info.workflowExecution.workflowId})`
+    `[Activity: saveHotelsToRedisActivity] Storing ${hotels.length} hotels in Redis for city: ${city} (WorkflowId: ${info.workflowExecution?.workflowId ?? 'unknown'})`
   );
 
   try {
@@ -83,7 +83,7 @@ export async function filterHotelsInRedisActivity(
 ): Promise<DeduplicatedHotel[]> {
   const info = Context.current().info;
   logger.info(
-    `[Activity: filterHotelsInRedisActivity] Querying Redis for city: ${city}, price range: [${minPrice ?? 'min'}, ${maxPrice ?? 'max'}] (WorkflowId: ${info.workflowExecution.workflowId})`
+    `[Activity: filterHotelsInRedisActivity] Querying Redis for city: ${city}, price range: [${minPrice ?? 'min'}, ${maxPrice ?? 'max'}] (WorkflowId: ${info.workflowExecution?.workflowId ?? 'unknown'})`
   );
 
   try {
