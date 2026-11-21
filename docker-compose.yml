@@ -1,0 +1,61 @@
+services:
+  # Redis service for caching deduplicated offers and performing price filtering via Sorted Sets
+  redis:
+    image: redis:7-alpine
+    container_name: triphoria-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - triphoria-net
+
+  # Temporal.io dev server (Server + Web UI + SQLite persistence)
+  temporal:
+    image: temporalio/dev-server:latest
+    container_name: triphoria-temporal
+    restart: unless-stopped
+    command: ["--ip", "0.0.0.0"]
+    ports:
+      - "7233:7233"   # Temporal gRPC API
+      - "8233:8233"   # Temporal Web UI
+    networks:
+      - triphoria-net
+
+  # Hotel Offer Orchestrator API & Temporal Worker
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: triphoria-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_TTL_SECONDS=3600
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_NAMESPACE=default
+      - TEMPORAL_TASK_QUEUE=hotel-offer-tasks
+      - SUPPLIER_A_URL=http://app:3000/supplierA/hotels
+      - SUPPLIER_B_URL=http://app:3000/supplierB/hotels
+    depends_on:
+      redis:
+        condition: service_healthy
+      temporal:
+        condition: service_started
+    networks:
+      - triphoria-net
+
+networks:
+  triphoria-net:
+    driver: bridge
