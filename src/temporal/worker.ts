@@ -1,4 +1,6 @@
 import { NativeConnection, Worker } from '@temporalio/worker';
+import path from 'path';
+import fs from 'fs';
 import { config } from '../config/env';
 import * as activities from './activities';
 import { logger } from '../utils/logger';
@@ -13,12 +15,23 @@ export async function runWorker(): Promise<Worker> {
     address: config.temporal.address,
   });
 
+  const bundlePath = path.resolve(__dirname, 'workflow-bundle.js');
+  const hasBundle = fs.existsSync(bundlePath);
+
+  if (hasBundle) {
+    logger.info(`Loading pre-bundled workflow from ${bundlePath}`);
+  } else {
+    logger.info('Pre-bundled workflow not found, falling back to runtime workflowsPath');
+  }
+
   const worker = await Worker.create({
     connection,
     namespace: config.temporal.namespace,
     taskQueue: config.temporal.taskQueue,
-    workflowsPath: require.resolve('./workflows'),
     activities,
+    ...(hasBundle
+      ? { workflowBundle: { codePath: bundlePath } }
+      : { workflowsPath: require.resolve('./workflows') }),
   });
 
   workerInstance = worker;

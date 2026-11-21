@@ -23,12 +23,12 @@ async function bootstrap() {
       await runWorker();
       logger.info('Temporal Worker started and ready to process workflows.');
     } catch (err: any) {
-      if (retryCount < 10) {
-        const backoffMs = Math.min(2000 * Math.pow(1.5, retryCount), 15000);
+      if (retryCount < 25) {
+        const backoffMs = Math.min(2000 * Math.pow(1.3, retryCount), 10000);
         logger.warn(
           `Temporal server not yet reachable (${err.message}). Retrying worker connection in ${Math.round(
             backoffMs / 1000
-          )}s (attempt ${retryCount + 1}/10)...`
+          )}s (attempt ${retryCount + 1}/25)...`
         );
         setTimeout(() => initTemporalWorker(retryCount + 1), backoffMs);
       } else {

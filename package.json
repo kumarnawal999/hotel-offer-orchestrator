@@ -4,7 +4,7 @@
   "description": "Hotel Offer Orchestrator aggregating and deduplicating supplier offers using Node.js, TypeScript, Temporal.io, and Redis.",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && ts-node src/scripts/bundle-workflows.ts",
     "start": "node dist/server.js",
     "dev": "nodemon --watch 'src/**/*.ts' --exec ts-node src/server.ts",
     "worker": "ts-node src/temporal/worker.ts",

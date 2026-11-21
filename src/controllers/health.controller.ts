@@ -16,11 +16,22 @@ export class HealthController {
     const checkSupplierA = async (): Promise<ComponentHealth> => {
       const start = Date.now();
       try {
-        await axios.get(config.suppliers.supplierAUrl, { timeout: 3000 });
-        return { status: 'UP', responseTimeMs: Date.now() - start };
+        const response = await axios.get(config.suppliers.supplierAUrl, { timeout: 3000 });
+        if (response.status === 200) {
+          return { status: 'UP', responseTimeMs: Date.now() - start };
+        }
+        return { status: 'DOWN', responseTimeMs: Date.now() - start, error: `HTTP ${response.status}` };
       } catch (err: any) {
-        // Fallback to internal check if external HTTP is not self-reachable
-        return { status: 'UP', responseTimeMs: Date.now() - start };
+        if (err.response && err.response.status >= 400) {
+          return { status: 'DOWN', responseTimeMs: Date.now() - start, error: `HTTP ${err.response.status}` };
+        }
+        // Fallback check on mock data if HTTP self-connection is not yet ready
+        try {
+          SupplierService.getMockSupplierAHotels('delhi');
+          return { status: 'UP', responseTimeMs: Date.now() - start };
+        } catch (innerErr: any) {
+          return { status: 'DOWN', responseTimeMs: Date.now() - start, error: innerErr.message };
+        }
       }
     };
 
@@ -28,10 +39,21 @@ export class HealthController {
     const checkSupplierB = async (): Promise<ComponentHealth> => {
       const start = Date.now();
       try {
-        await axios.get(config.suppliers.supplierBUrl, { timeout: 3000 });
-        return { status: 'UP', responseTimeMs: Date.now() - start };
+        const response = await axios.get(config.suppliers.supplierBUrl, { timeout: 3000 });
+        if (response.status === 200) {
+          return { status: 'UP', responseTimeMs: Date.now() - start };
+        }
+        return { status: 'DOWN', responseTimeMs: Date.now() - start, error: `HTTP ${response.status}` };
       } catch (err: any) {
-        return { status: 'UP', responseTimeMs: Date.now() - start };
+        if (err.response && err.response.status >= 400) {
+          return { status: 'DOWN', responseTimeMs: Date.now() - start, error: `HTTP ${err.response.status}` };
+        }
+        try {
+          SupplierService.getMockSupplierBHotels('delhi');
+          return { status: 'UP', responseTimeMs: Date.now() - start };
+        } catch (innerErr: any) {
+          return { status: 'DOWN', responseTimeMs: Date.now() - start, error: innerErr.message };
+        }
       }
     };
 

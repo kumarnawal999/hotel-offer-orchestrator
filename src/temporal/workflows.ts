@@ -1,6 +1,6 @@
 import { proxyActivities, log } from '@temporalio/workflow';
 import type * as activities from './activities';
-import { DeduplicatedHotel, SupplierHotel, WorkflowInput } from '../types/hotel.types';
+import type { DeduplicatedHotel, SupplierHotel, WorkflowInput } from '../types/hotel.types';
 
 // Configure activity execution with timeouts and retry policy
 const {
