@@ -222,7 +222,9 @@ curl -X GET "http://localhost:3000/api/hotels?city=delhi&minPrice=5000&maxPrice=
 Make sure Docker Desktop is running, then run:
 
 ```bash
+# Using Docker Compose v2 (or docker-compose with hyphen):
 docker compose up --build
+# or: docker-compose up --build
 ```
 
 This starts:
